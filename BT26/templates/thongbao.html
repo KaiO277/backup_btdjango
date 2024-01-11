@@ -1,0 +1,28 @@
+{% extends "base.html" %}
+
+{% block title %}   {{ title }}    {% endblock title %}
+
+{% block content %}
+
+
+<div class="container" ng-app="tabApp">
+    <div class="row" ng-controller="TabController">
+        
+        <div class="col-md-8">
+                <div class="jumbotron">
+                <div ng-show="isSet(1)">
+                    
+                    <h1>{{ content }}</h1>
+                    <p>
+                        <a href="{% url 'login' %}" class="btn btn-lg btn-block btn-primary" style="background-color: #1877f2; color: #ffffff;">
+                            <i class="fab fa-facebook me-2"></i> Login
+                        </a>
+                    </p>
+                </div>
+            </div>
+              
+          
+        </div>
+    </div>
+</div>
+{% endblock content %}

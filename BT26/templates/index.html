@@ -1,0 +1,108 @@
+{% extends "base.html" %}
+
+{% block title %}Home{% endblock title %}
+
+{% block content %}
+<div class="container">
+  <h2>Student Table</h2>
+    <a href="{% url 'add' %}" class="btn btn-success" role="button">Create</a> 
+  <br> 
+  <table class="table table-bordered">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Name</th>
+        <th>Age</th>
+        <th>Avatar</th>
+        <th colspan="2">File </th>
+        <th>Description</th>
+        <th colspan="2">Action</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for student in my_data %}
+        
+        <tr>
+          <td>{{ student.id }}</td>
+          <td>{{ student.name }}</td>
+          <td>{{ student.age }}</td>
+          <td>
+            {% if student.avatar %}
+              <img src="{{ student.avatar.url }}" alt="{{ student.name }}" class="avatar-thumbnail">
+            {% endif %}
+          </td>
+          {% load static %}
+          <td>
+            {% with file_extension=student.document_file.name|lower %}
+              {% if file_extension|slice:'-4:' == '.pdf' %}
+              <img src="{% static 'img/pdf.png' %}" alt="Document Thumbnail" width="50" height="50">
+              {% elif file_extension|slice:'-5:' == '.docx' %}
+              <img src="{% static 'img/word.png' %}" alt="Document Thumbnail" width="50" height="50">  
+              {% else %}
+                ko
+              {% endif %}
+            {% endwith %}
+          </td>
+          <td>
+            {% if student.document_file %}
+                <a href="{{ student.document_file.url }}" download="{{ student.document_file.name }}">
+                    {{ student.document_file.name }}
+                </a>
+            {% else %}
+                No file
+            {% endif %}
+          </td>
+          <td>{{ student.description }}</td>
+          <td>
+            <a href="{% url 'edit' student.id %}" class="btn btn-primary" role="button">Update</a>
+          </td>
+          <td>
+            <form action="{% url 'delete' student.id %}" method="post">
+              {% csrf_token %}
+              <button type="submit" class="btn btn-danger">Delete</button>
+            </form>
+          </td>
+        </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</div>
+
+<div class="container mt-4">
+  <ul class="pagination">
+    {% if my_data.has_previous %}
+        <li class="page-item">
+            <a class="page-link" href="?page=1" aria-label="First">
+                <span aria-hidden="true">&laquo;&laquo;</span>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ my_data.previous_page_number }}" aria-label="Previous">
+                <span aria-hidden="true">&laquo;</span>
+            </a>
+        </li>
+    {% endif %}
+
+    {% for i in my_data.paginator.page_range %}
+        <li class="page-item {% if my_data.number == i %}active{% endif %}">
+            <a class="page-link" href="?page={{ i }}">{{ i }}</a>
+        </li>
+    {% endfor %}
+
+    {% if my_data.has_next %}
+        <li class="page-item">
+            <a class="page-link" href="?page={{ my_data.next_page_number }}" aria-label="Next">
+                <span aria-hidden="true">&raquo;</span>
+            </a>
+        </li>
+        <li class="page-item">
+            <a class="page-link" href="?page={{ my_data.paginator.num_pages }}" aria-label="Last">
+                <span aria-hidden="true">&raquo;&raquo;</span>
+            </a>
+        </li>
+    {% endif %}
+</ul>
+
+</div>
+
+{% endblock content %}

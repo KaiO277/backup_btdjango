@@ -1,0 +1,69 @@
+{% extends "base.html" %}
+
+{% block title %}Update student{% endblock title %}
+{% block content %}
+
+<div class="container">
+    <h2>Update Student</h2>
+    <p>In this example, we use <code>.was-validated</code> to indicate what's missing before submitting the form:</p>
+    <form action="{% url 'update' student.id %}" method='POST' enctype="multipart/form-data">
+        {% csrf_token %}
+      <div class="form-group">
+        <label for="uname">Username:</label>
+        <input type="text" class="form-control" placeholder="Enter username" name="username" value="{{ student.name }}">
+      </div>
+      <div class="form-group">
+        <label for="text">Age:</label>
+        <input type="number" class="form-control" placeholder="Enter age" name="age" value="{{ student.age }}">
+      </div>  
+      <div class="form-group">
+        <label for="avatar">Avatar:</label>
+        <input type="file" class="form-control-file" name="avatar" id="id_avatar">
+        <!-- Thẻ img để hiển thị trước ảnh -->
+        {% load static %}
+        <img class="rounded-circle" id="avatar-preview" src="{% if student.avatar %}{{ student.avatar.url }}{% else %}{% static 'img/avatar.jpg' %}{% endif %}" alt="Avatar Preview" width="100" height="100">     
+      </div>   
+      <div class="form-group">
+        <label for="document_file">Document File:</label>
+        <input type="file" class="form-control-file" name="document_file" id="id_document_file" accept=".docx, .pdf">
+        <div id="thumbnail-container"></div>
+      </div> 
+      <script>
+        document.getElementById('id_document_file').addEventListener('change', function() {
+            var fileInput = this;
+            var thumbnailContainer = document.getElementById('thumbnail-container');
+    
+            // Reset the thumbnail container
+            thumbnailContainer.innerHTML = '';
+    
+            if (fileInput.files.length > 0) {
+                var file = fileInput.files[0];
+    
+                // Check the file extension
+                var isDocx = file.name.toLowerCase().endsWith('.docx');
+                var isPdf = file.name.toLowerCase().endsWith('.pdf');
+    
+                // Display the corresponding thumbnail
+                if (isDocx) {
+                    thumbnailContainer.innerHTML = '<img src="{% static 'img/word.png' %}" alt="Document Thumbnail" width="100" height="100">';
+                } else if (isPdf) {
+                    thumbnailContainer.innerHTML = '<img src="{% static 'img/pdf.png' %}" alt="PDF Thumbnail" width="100" height="100">';
+                } else {
+                  alert('Chỉ được file .doc và .pdf thôi');
+                  fileInput.value = '';
+                }
+            }
+          });
+      </script> 
+      <div class="form-group">
+        <label for="id_description">Description:</label>
+        <textarea id="id_description" name="description" rows="4" cols="50"  class="form-control" >{{ student.description }}</textarea>
+        <script>
+          CKEDITOR.replace('id_description');
+        </script>
+      </div> 
+      <button type="submit" class="btn btn-primary">Add</button>
+    </form>
+  </div>
+  
+{% endblock content %}
